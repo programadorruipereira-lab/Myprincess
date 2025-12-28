@@ -1,0 +1,106 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card" style="background-color: #e6f7ff; border: 2px solid #91d5ff;">
+    <h2>🤖 Nutri IA & Perfil</h2>
+    {% if perfil %}
+        <p><strong>IMC:</strong> {{ imc }} ({{ classificacao_imc }}) - Fase: {{ perfil.fase_vida }}</p>
+        <p><strong>Sugestão Inteligente:</strong> {{ dieta_sugerida }}</p>
+        <button onclick="document.getElementById('perfilForm').style.display='block'" class="btn btn-primary" style="font-size: 0.8rem;">Editar Perfil</button>
+    {% else %}
+        <p>Preencha seu perfil para receber dicas personalizadas.</p>
+        <button onclick="document.getElementById('perfilForm').style.display='block'" class="btn btn-primary">Criar Perfil</button>
+    {% endif %}
+
+    <div id="perfilForm" style="display: none; margin-top: 1rem; border-top: 1px solid #ccc; padding-top: 1rem;">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="salvar_perfil">
+            <div class="flex">
+                <div style="flex:1;">
+                    <label>Nome</label>
+                    <input type="text" name="nome" value="{{ perfil.nome }}" required>
+                </div>
+                <div style="flex:1;">
+                    <label>Fase da Vida</label>
+                    <select name="fase">
+                        <option value="Normal">Normal</option>
+                        <option value="Gestante">Gestante</option>
+                        <option value="Tentante">Tentante</option>
+                        <option value="Lactante">Lactante</option>
+                    </select>
+                </div>
+            </div>
+            <label>Data de Nascimento</label>
+            <input type="date" name="data_nascimento" value="{{ perfil.data_nascimento|date:'Y-m-d' }}" required>
+            <div class="flex">
+                <div style="flex:1;">
+                    <label>Altura (m)</label>
+                    <input type="number" step="0.01" name="altura" value="{{ perfil.altura|stringformat:'f' }}" placeholder="1.65" required>
+                </div>
+                <div style="flex:1;">
+                    <label>Peso (kg)</label>
+                    <input type="number" step="0.1" name="peso" value="{{ perfil.peso|stringformat:'f' }}" placeholder="60.0" required>
+                </div>
+            </div>
+            <label>Objetivo</label>
+            <input type="text" name="objetivo" value="{{ perfil.objetivo }}" placeholder="Ex: Emagrecer, Manter peso, Ganhar massa">
+            
+            <button type="submit" class="btn btn-accent w-full">Salvar Perfil</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🥗 Controle da Dieta</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="registrar_refeicao">
+        <label>Refeição</label>
+        <select name="refeicao">
+            <option value="Cafe">Café da Manhã</option>
+            <option value="Almoco">Almoço</option>
+            <option value="Jantar">Jantar</option>
+            <option value="Lanche">Lanche</option>
+        </select>
+
+        <label>Alimentos</label>
+        <textarea name="alimentos" rows="3" placeholder="O que você comeu?" required></textarea>
+
+        <label>Observações</label>
+        <textarea name="observacoes" rows="2" placeholder="Como se sentiu?"></textarea>
+
+        <button type="submit" class="btn btn-primary w-full">Registrar Refeição</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Refeições de Hoje</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Refeição</th>
+                <th>Alimentos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in dieta_items %}
+            <tr>
+                <td>{{ item.get_refeicao_display }}</td>
+                <td style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>{{ item.alimentos }}</span>
+                    <form action="{% url 'delete_item' 'Dieta' item.id %}" method="post" onsubmit="return confirm('Apagar?');">
+                        {% csrf_token %}
+                        <button type="submit" style="background:none;border:none;cursor:pointer;">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Nada registrado hoje.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

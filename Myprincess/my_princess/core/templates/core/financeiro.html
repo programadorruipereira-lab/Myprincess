@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="flex justify-between items-center">
+        <h2>💰 Controle Financeiro</h2>
+        <button id="toggleFormBtn" class="btn btn-primary" onclick="toggleForm()">Nova Transação</button>
+    </div>
+
+    <!-- Form (Hidden by default or modal) -->
+    <div id="transactionForm" style="display: none; margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
+        <h3>Adicionar Nova Transação</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex" style="flex-wrap: wrap;">
+                <div style="flex: 1;">
+                    <label>Tipo</label>
+                    <select name="tipo">
+                        <option value="despesa">Despesa</option>
+                        <option value="receita">Receita</option>
+                    </select>
+                </div>
+                <div style="flex: 2;">
+                    <label>Descrição</label>
+                    <input type="text" name="descricao" required placeholder="Ex: Mercado, Salário">
+                </div>
+            </div>
+            <div class="flex" style="flex-wrap: wrap;">
+                <div style="flex: 1;">
+                    <label>Categoria</label>
+                    <input type="text" name="categoria" placeholder="Ex: Alimentação">
+                </div>
+                <div style="flex: 1;">
+                    <label>Valor (R$)</label>
+                    <input type="number" name="valor" step="0.01" required placeholder="0.00">
+                </div>
+                <div style="flex: 1;">
+                    <label>Data</label>
+                    <input type="date" name="data" required value="{{ today }}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-accent w-full" style="width: 100%;">Salvar</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Extrato</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in transacoes %}
+            <tr>
+                <td>{{ item.data|date:"d/m/Y" }}</td>
+                <td>{{ item.descricao }}</td>
+                <td>{{ item.categoria }}</td>
+                <td>
+                    {% if item.tipo == 'receita' %}
+                    <span style="color: green; font-weight: bold;">Receita</span>
+                    {% else %}
+                    <span style="color: red; font-weight: bold;">Despesa</span>
+                    {% endif %}
+                </td>
+                <td style="font-weight: bold;">R$ {{ item.valor }}</td>
+                <td>
+                    <form action="{% url 'delete_item' item.tipo|title item.id %}" method="post" style="display:inline;" onsubmit="return confirm('Apagar?');">
+                        {% csrf_token %}
+                        <button type="submit" style="background:none;border:none;cursor:pointer;">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">Nenhuma transação registrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function toggleForm() {
+        var form = document.getElementById('transactionForm');
+        var btn = document.getElementById('toggleFormBtn');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            btn.textContent = 'Cancelar';
+            btn.style.backgroundColor = '#666';
+        } else {
+            form.style.display = 'none';
+            btn.textContent = 'Nova Transação';
+            btn.style.backgroundColor = 'var(--secondary-color)';
+        }
+    }
+</script>
+{% endblock %}

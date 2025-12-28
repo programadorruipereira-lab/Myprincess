@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}My Princess{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo"><span>❤️</span> My Princess</div>
+      <nav>
+        <ul>
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'financeiro' %}">Financeiro</a></li>
+          <li><a href="{% url 'dieta' %}">Dieta</a></li>
+          <li><a href="{% url 'menstruacao' %}">Menstruação</a></li>
+          <li><a href="{% url 'hidratacao' %}">Hidratação</a></li>
+          <li><a href="{% url 'gravidez' %}">Gravidez</a></li>
+          <li><a href="{% url 'leitura' %}">Leitura</a></li>
+          <li><a href="{% url 'diario' %}">Diário</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>{% block content %} {% endblock %}</main>
+
+    <script>
+      // Place for any global JS
+    </script>
+  </body>
+</html>

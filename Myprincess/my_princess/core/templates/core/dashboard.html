@@ -1,0 +1,38 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="welcome-card card">
+    <h1>Olá, meu amor! 💖</h1>
+    <p>Espero que seu dia seja tão lindo quanto você.</p>
+    <div class="reminder mt-4">
+        <strong>Lembrete:</strong> <span>Beba água e sorria!</span>
+    </div>
+</div>
+
+<div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+    <!-- Resumo rápido (Mockup for now) -->
+    <div class="card">
+        <h3>💰 Financeiro</h3>
+        <p>Saldo Mês: R$ {{ saldo_mes|floatformat:2 }}</p>
+        <a href="{% url 'financeiro' %}" class="btn btn-primary mt-4">Ver Detalhes</a>
+    </div>
+
+    <div class="card">
+        <h3>🥗 Dieta</h3>
+        <p>Acesse para ver suas refeições</p>
+        <a href="{% url 'dieta' %}" class="btn btn-primary mt-4">Registrar</a>
+    </div>
+
+    <div class="card">
+        <h3>💧 Água</h3>
+        <p>Copos: {{ copos }}/{{ meta_copos }}</p>
+        <a href="{% url 'hidratacao' %}" class="btn btn-primary mt-4">Beber Água</a>
+    </div>
+    
+    <div class="card">
+        <h3>📅 Ciclo</h3>
+        <p>Próxima: <strong>{{ proxima_menstruacao }}</strong></p>
+        <a href="{% url 'menstruacao' %}" class="btn btn-primary mt-4">Ver Detalhes</a>
+    </div>
+</div>
+{% endblock %}

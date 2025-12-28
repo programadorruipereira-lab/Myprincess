@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>📔 Querido Diário...</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Humor do Dia</label>
+        <select name="humor" style="font-size: 1.5rem; margin-bottom: 1rem;">
+            <option value="🥰">🥰</option>
+            <option value="😄">😄</option>
+            <option value="😐">😐</option>
+            <option value="😢">😢</option>
+            <option value="😡">😡</option>
+            <option value="😴">😴</option>
+        </select>
+        
+        <textarea name="conteudo" rows="10" placeholder="Escreva sobre seu dia..." style="font-family: 'Indie Flower', cursive, 'Poppins', sans-serif; font-size: 1.1rem; border: none; background: #fff; border-bottom: 2px solid var(--secondary-color);"></textarea>
+        <button type="submit" class="btn btn-primary mt-4">Salvar Entrada</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Entradas Anteriores</h3>
+    {% for entrada in entradas %}
+    <div style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="color: var(--primary-color);">{{ entrada.data|date:"d/m/Y H:i" }} {{ entrada.humor|default:"" }}</h4>
+            <form action="{% url 'delete_item' 'EntradaDiario' entrada.id %}" method="post" onsubmit="return confirm('Apagar?');">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; cursor: pointer;">🗑️</button>
+            </form>
+        </div>
+        <p style="white-space: pre-wrap;">{{ entrada.conteudo }}</p>
+    </div>
+    {% empty %}
+    <p>Nada escrito ainda. Comece hoje!</p>
+    {% endfor %}
+</div>
+{% endblock %}

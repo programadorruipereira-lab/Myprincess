@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card text-center">
+    <h2>💧 Beber Água</h2>
+    <div style="font-size: 4rem; margin: 2rem 0; font-weight: bold; color: #2196F3;">
+        {{ copos_hoje }} / {{ meta }}
+    </div>
+    <p>Copos hoje</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="add" class="btn btn-primary" style="border-radius: 50%; width: 80px; height: 80px; font-size: 2rem; display: inline-flex; align-items: center; justify-content: center;">
+            +1
+        </button>
+    </form>
+    
+    <form action="{% url 'reset_hidratacao' %}" method="post" style="margin-top: 2rem;">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #ffcccc; color: #d63384; font-size: 0.9rem;" onclick="return confirm('Zerar contador?');">Zerar/Reiniciar</button>
+    </form>
+    
+    {% if atingiu_meta %}
+    <div style="margin-top: 2rem; color: var(--primary-color); font-weight: bold;">
+        Parabéns! Você atingiu sua meta diária! 🎉
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

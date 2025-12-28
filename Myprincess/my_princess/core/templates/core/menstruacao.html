@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>🌸 Controle Menstrual</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex">
+            <div style="flex:1;">
+                <label>Data Início</label>
+                <input type="date" name="data_inicio" required>
+            </div>
+            <div style="flex:1;">
+                <label>Data Fim</label>
+                <input type="date" name="data_fim">
+            </div>
+        </div>
+        <label>Sintomas</label>
+        <textarea name="sintomas" placeholder="Cólica, dor de cabeça, etc."></textarea>
+        
+        <button type="submit" class="btn btn-primary">Registrar Ciclo</button>
+    </form>
+</div>
+
+<script>
+    document.querySelector('input[name="data_inicio"]').addEventListener('change', function() {
+        if (this.value) {
+            const parts = this.value.split('-'); // yyyy-mm-dd
+            // Create date in local time (avoid UTC offset issues)
+            const startDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            
+            // Default period duration: 5 days. Start (Day 1) + 4 days = Day 5
+            startDate.setDate(startDate.getDate() + 4); 
+            
+            const yyyy = startDate.getFullYear();
+            const mm = String(startDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(startDate.getDate()).padStart(2, '0');
+            
+            document.querySelector('input[name="data_fim"]').value = `${yyyy}-${mm}-${dd}`;
+        }
+    });
+</script>
+
+<div class="card">
+    <div class="card" style="background: #fff0f5; border: 2px solid var(--primary-color);">
+        <h3>📅 Previsões</h3>
+        {% if proxima_menstruacao %}
+        <p><strong>Próxima Menstruação:</strong> {{ proxima_menstruacao|date:"d/m/Y" }}</p>
+        <p><strong>Período Fértil:</strong> {{ periodo_fertil_inicio|date:"d/m/Y" }} a {{ periodo_fertil_fim|date:"d/m/Y" }}</p>
+        {% else %}
+        <p>Registre um ciclo para ver previsões.</p>
+        {% endif %}
+    </div>
+
+    <h3>Histórico de Ciclos</h3>
+    <ul>
+        {% for ciclo in ciclos %}
+        <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>{{ ciclo.data_inicio|date:"d/m/Y" }}</strong> 
+                {% if ciclo.data_fim %} a {{ ciclo.data_fim|date:"d/m/Y" }} {% endif %}
+                <br>
+                <small>{{ ciclo.sintomas }}</small>
+            </div>
+            <form action="{% url 'delete_item' 'CicloMenstrual' ciclo.id %}" method="post" onsubmit="return confirm('Tem certeza?');">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; cursor: pointer;">❌</button>
+            </form>
+        </li>
+        {% empty %}
+        <li>Nenhum ciclo registrado.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

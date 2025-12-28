@@ -1,0 +1,47 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>🤰 Acompanhamento da Gravidez</h2>
+    <p class="text-light">Um momento mágico...</p>
+    
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <label>Semanas de Gestação</label>
+        <input type="number" name="semanas" required>
+        
+        <label>Como você está se sentindo? (Humor)</label>
+        <select name="humor" style="font-size: 1.5rem;">
+            <option value="🥰 Apaixonada">🥰</option>
+            <option value="🤢 Enjoada">🤢</option>
+            <option value="😴 Cansada">😴</option>
+            <option value="😄 Feliz">😄</option>
+            <option value="😭 Emotiva">😭</option>
+            <option value="😡 Irritada">😡</option>
+        </select>
+
+        <label>Anotações Médicas / Sentimentos</label>
+        <textarea name="notas" rows="4"></textarea>
+
+        <button type="submit" class="btn btn-primary">Salvar Registro</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Diário da Barriguinha</h3>
+    {% for reg in registros %}
+    <div style="margin-bottom: 1rem; border-left: 4px solid var(--secondary-color); padding-left: 1rem; display: flex; justify-content: space-between;">
+        <div>
+            <strong>Semana {{ reg.semanas_gestacao }}</strong> - {{ reg.humor }}
+            <p>{{ reg.notas_medicas }}</p>
+        </div>
+        <form action="{% url 'delete_item' 'Gravidez' reg.id %}" method="post" onsubmit="return confirm('Apagar?');">
+            {% csrf_token %}
+            <button type="submit" style="background:none;border:none;cursor:pointer;">🗑️</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Nenhum registro ainda.</p>
+    {% endfor %}
+</div>
+{% endblock %}
